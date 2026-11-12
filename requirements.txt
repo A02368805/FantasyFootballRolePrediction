@@ -2,7 +2,7 @@
 nflreadpy>=0.1.0
 # rtcompat = Polars build without AVX requirements, so it also runs under Rosetta
 # (x86_64 Python on Apple Silicon). Works fine on native machines too.
-polars[rtcompat]>=1.0.0
+polars[rtcompat]>=1.21.0
 
 # Data handling / classical ML
 pandas>=2.0.0
