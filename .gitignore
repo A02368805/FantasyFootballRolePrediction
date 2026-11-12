@@ -1,0 +1,37 @@
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+.mypy_cache/
+.ruff_cache/
+
+# Data (large / re-downloadable). Folder placeholders are kept via .gitkeep.
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Trained models and large generated artifacts
+models/*
+!models/.gitkeep
+*.joblib
+*.pkl
+*.pt
+*.pth
+*.parquet
+*.csv
+
+# Generated results (graphs are small PNGs and are intentionally NOT ignored)
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
