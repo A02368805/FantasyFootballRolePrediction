@@ -1,0 +1,638 @@
+{
+  "experiment": "Phase 3 baselines: train 2022-2023, tune/evaluate on 2024 validation; 2025 test untouched",
+  "random_seed": 42,
+  "versions": {
+    "python": "3.11.18",
+    "scikit-learn": "1.9.1",
+    "numpy": "2.4.6",
+    "polars": "2.1.0"
+  },
+  "statistical_features": [
+    "carries",
+    "targets",
+    "opportunities",
+    "target_share",
+    "avg3_opportunities",
+    "avg3_carries",
+    "avg3_targets",
+    "avg3_receptions",
+    "avg3_rushing_yards",
+    "avg3_receiving_yards",
+    "avg3_fantasy_points_ppr"
+  ],
+  "tfidf_params": {
+    "ngram_range": [
+      1,
+      2
+    ],
+    "min_df": 5,
+    "max_features": 5000,
+    "sublinear_tf": true,
+    "lowercase": true,
+    "token_pattern": "(?u)\\b[a-z][a-z']+\\b",
+    "stop_words": null,
+    "dtype": "float64"
+  },
+  "tuning_grid": {
+    "C": [
+      0.01,
+      0.1,
+      1.0,
+      10.0
+    ],
+    "class_weight": [
+      null,
+      "balanced"
+    ],
+    "selection_metric": "validation macro F1"
+  },
+  "sizes": {
+    "train": 5497,
+    "validation": 2796,
+    "test": 2889
+  },
+  "selected": {
+    "Majority-class dummy": {
+      "C": 1.0,
+      "class_weight": null,
+      "macro_f1": 0.26837606837606837,
+      "accuracy": 0.6738197424892703
+    },
+    "Statistics-only LR": {
+      "C": 10.0,
+      "class_weight": "balanced",
+      "macro_f1": 0.42335991941773266,
+      "accuracy": 0.5182403433476395
+    },
+    "Text-only LR (TF-IDF)": {
+      "C": 0.01,
+      "class_weight": "balanced",
+      "macro_f1": 0.4223239424008998,
+      "accuracy": 0.5811874105865522
+    },
+    "Combined LR (stats+TF-IDF)": {
+      "C": 0.01,
+      "class_weight": "balanced",
+      "macro_f1": 0.42672873219651386,
+      "accuracy": 0.5207439198855508
+    }
+  },
+  "grid_results": {
+    "Majority-class dummy": [
+      {
+        "C": 1.0,
+        "class_weight": null,
+        "macro_f1": 0.26837606837606837,
+        "accuracy": 0.6738197424892703
+      }
+    ],
+    "Statistics-only LR": [
+      {
+        "C": 0.01,
+        "class_weight": null,
+        "macro_f1": 0.2908325289174976,
+        "accuracy": 0.670958512160229
+      },
+      {
+        "C": 0.01,
+        "class_weight": "balanced",
+        "macro_f1": 0.41900435629231286,
+        "accuracy": 0.5343347639484979
+      },
+      {
+        "C": 0.1,
+        "class_weight": null,
+        "macro_f1": 0.29249839190998916,
+        "accuracy": 0.6688125894134478
+      },
+      {
+        "C": 0.1,
+        "class_weight": "balanced",
+        "macro_f1": 0.42199306882419285,
+        "accuracy": 0.5189556509298998
+      },
+      {
+        "C": 1.0,
+        "class_weight": null,
+        "macro_f1": 0.2946348163215633,
+        "accuracy": 0.6680972818311874
+      },
+      {
+        "C": 1.0,
+        "class_weight": "balanced",
+        "macro_f1": 0.42289068811559294,
+        "accuracy": 0.5182403433476395
+      },
+      {
+        "C": 10.0,
+        "class_weight": null,
+        "macro_f1": 0.2944918486753401,
+        "accuracy": 0.6677396280400573
+      },
+      {
+        "C": 10.0,
+        "class_weight": "balanced",
+        "macro_f1": 0.42335991941773266,
+        "accuracy": 0.5182403433476395
+      }
+    ],
+    "Text-only LR (TF-IDF)": [
+      {
+        "C": 0.01,
+        "class_weight": null,
+        "macro_f1": 0.26837606837606837,
+        "accuracy": 0.6738197424892703
+      },
+      {
+        "C": 0.01,
+        "class_weight": "balanced",
+        "macro_f1": 0.4223239424008998,
+        "accuracy": 0.5811874105865522
+      },
+      {
+        "C": 0.1,
+        "class_weight": null,
+        "macro_f1": 0.26837606837606837,
+        "accuracy": 0.6738197424892703
+      },
+      {
+        "C": 0.1,
+        "class_weight": "balanced",
+        "macro_f1": 0.40179069336192885,
+        "accuracy": 0.5035765379113019
+      },
+      {
+        "C": 1.0,
+        "class_weight": null,
+        "macro_f1": 0.2772506318511716,
+        "accuracy": 0.6738197424892703
+      },
+      {
+        "C": 1.0,
+        "class_weight": "balanced",
+        "macro_f1": 0.392439194135408,
+        "accuracy": 0.48605150214592274
+      },
+      {
+        "C": 10.0,
+        "class_weight": null,
+        "macro_f1": 0.3092862128505864,
+        "accuracy": 0.6598712446351931
+      },
+      {
+        "C": 10.0,
+        "class_weight": "balanced",
+        "macro_f1": 0.39713784313447026,
+        "accuracy": 0.5092989985693849
+      }
+    ],
+    "Combined LR (stats+TF-IDF)": [
+      {
+        "C": 0.01,
+        "class_weight": null,
+        "macro_f1": 0.28451984228708144,
+        "accuracy": 0.6713161659513591
+      },
+      {
+        "C": 0.01,
+        "class_weight": "balanced",
+        "macro_f1": 0.42672873219651386,
+        "accuracy": 0.5207439198855508
+      },
+      {
+        "C": 0.1,
+        "class_weight": null,
+        "macro_f1": 0.2874579349393729,
+        "accuracy": 0.6684549356223176
+      },
+      {
+        "C": 0.1,
+        "class_weight": "balanced",
+        "macro_f1": 0.4251920047660029,
+        "accuracy": 0.5003576537911302
+      },
+      {
+        "C": 1.0,
+        "class_weight": null,
+        "macro_f1": 0.3067186908145499,
+        "accuracy": 0.6670243204577968
+      },
+      {
+        "C": 1.0,
+        "class_weight": "balanced",
+        "macro_f1": 0.4052252504758105,
+        "accuracy": 0.49105865522174535
+      },
+      {
+        "C": 10.0,
+        "class_weight": null,
+        "macro_f1": 0.33580739546597443,
+        "accuracy": 0.657725321888412
+      },
+      {
+        "C": 10.0,
+        "class_weight": "balanced",
+        "macro_f1": 0.40216114086140536,
+        "accuracy": 0.5107296137339056
+      }
+    ]
+  },
+  "validation_metrics": {
+    "Majority-class dummy": {
+      "n": 2796,
+      "accuracy": 0.6738197424892703,
+      "macro_precision": 0.2246065808297568,
+      "macro_recall": 0.3333333333333333,
+      "macro_f1": 0.26837606837606837,
+      "per_class": {
+        "Decreasing": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 438
+        },
+        "Stable": {
+          "precision": 0.6738197424892703,
+          "recall": 1.0,
+          "f1": 0.8051282051282052,
+          "support": 1884
+        },
+        "Increasing": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 474
+        }
+      },
+      "labels": [
+        "Decreasing",
+        "Stable",
+        "Increasing"
+      ],
+      "confusion_matrix": [
+        [
+          0,
+          438,
+          0
+        ],
+        [
+          0,
+          1884,
+          0
+        ],
+        [
+          0,
+          474,
+          0
+        ]
+      ],
+      "true_counts": {
+        "Decreasing": 438,
+        "Stable": 1884,
+        "Increasing": 474
+      },
+      "predicted_counts": {
+        "Decreasing": 0,
+        "Stable": 2796,
+        "Increasing": 0
+      }
+    },
+    "Statistics-only LR": {
+      "n": 2796,
+      "accuracy": 0.5182403433476395,
+      "macro_precision": 0.42750050354454877,
+      "macro_recall": 0.4597117467161613,
+      "macro_f1": 0.42335991941773266,
+      "per_class": {
+        "Decreasing": {
+          "precision": 0.27303754266211605,
+          "recall": 0.547945205479452,
+          "f1": 0.36446469248291574,
+          "support": 438
+        },
+        "Stable": {
+          "precision": 0.7750889679715303,
+          "recall": 0.5780254777070064,
+          "f1": 0.6622073578595318,
+          "support": 1884
+        },
+        "Increasing": {
+          "precision": 0.234375,
+          "recall": 0.25316455696202533,
+          "f1": 0.2434077079107505,
+          "support": 474
+        }
+      },
+      "labels": [
+        "Decreasing",
+        "Stable",
+        "Increasing"
+      ],
+      "confusion_matrix": [
+        [
+          240,
+          100,
+          98
+        ],
+        [
+          501,
+          1089,
+          294
+        ],
+        [
+          138,
+          216,
+          120
+        ]
+      ],
+      "true_counts": {
+        "Decreasing": 438,
+        "Stable": 1884,
+        "Increasing": 474
+      },
+      "predicted_counts": {
+        "Decreasing": 879,
+        "Stable": 1405,
+        "Increasing": 512
+      }
+    },
+    "Text-only LR (TF-IDF)": {
+      "n": 2796,
+      "accuracy": 0.5811874105865522,
+      "macro_precision": 0.4326655501628946,
+      "macro_recall": 0.4380776561275313,
+      "macro_f1": 0.4223239424008998,
+      "per_class": {
+        "Decreasing": {
+          "precision": 0.2711864406779661,
+          "recall": 0.4383561643835616,
+          "f1": 0.33507853403141363,
+          "support": 438
+        },
+        "Stable": {
+          "precision": 0.7427635172037138,
+          "recall": 0.721868365180467,
+          "f1": 0.7321668909825033,
+          "support": 1884
+        },
+        "Increasing": {
+          "precision": 0.2840466926070039,
+          "recall": 0.1540084388185654,
+          "f1": 0.1997264021887825,
+          "support": 474
+        }
+      },
+      "labels": [
+        "Decreasing",
+        "Stable",
+        "Increasing"
+      ],
+      "confusion_matrix": [
+        [
+          192,
+          203,
+          43
+        ],
+        [
+          383,
+          1360,
+          141
+        ],
+        [
+          133,
+          268,
+          73
+        ]
+      ],
+      "true_counts": {
+        "Decreasing": 438,
+        "Stable": 1884,
+        "Increasing": 474
+      },
+      "predicted_counts": {
+        "Decreasing": 708,
+        "Stable": 1831,
+        "Increasing": 257
+      }
+    },
+    "Combined LR (stats+TF-IDF)": {
+      "n": 2796,
+      "accuracy": 0.5207439198855508,
+      "macro_precision": 0.43356723172294515,
+      "macro_recall": 0.4635239780330065,
+      "macro_f1": 0.42672873219651386,
+      "per_class": {
+        "Decreasing": {
+          "precision": 0.26526082130965595,
+          "recall": 0.545662100456621,
+          "f1": 0.3569828230022405,
+          "support": 438
+        },
+        "Stable": {
+          "precision": 0.7917271407837445,
+          "recall": 0.5790870488322718,
+          "f1": 0.6689147762109136,
+          "support": 1884
+        },
+        "Increasing": {
+          "precision": 0.2437137330754352,
+          "recall": 0.26582278481012656,
+          "f1": 0.2542885973763875,
+          "support": 474
+        }
+      },
+      "labels": [
+        "Decreasing",
+        "Stable",
+        "Increasing"
+      ],
+      "confusion_matrix": [
+        [
+          239,
+          86,
+          113
+        ],
+        [
+          515,
+          1091,
+          278
+        ],
+        [
+          147,
+          201,
+          126
+        ]
+      ],
+      "true_counts": {
+        "Decreasing": 438,
+        "Stable": 1884,
+        "Increasing": 474
+      },
+      "predicted_counts": {
+        "Decreasing": 901,
+        "Stable": 1378,
+        "Increasing": 517
+      }
+    }
+  },
+  "validation_macro_f1_paired_bootstrap": {
+    "combined_minus_stats": {
+      "point_difference": 0.003368812778781205,
+      "ci95_low": -0.008580138803344368,
+      "ci95_high": 0.015511977631748997,
+      "share_resamples_a_better": 0.717,
+      "n_boot": 1000,
+      "seed": 42
+    },
+    "text_minus_stats": {
+      "point_difference": -0.0010359770168328342,
+      "ci95_low": -0.02629438108625834,
+      "ci95_high": 0.020512477734791607,
+      "share_resamples_a_better": 0.444,
+      "n_boot": 1000,
+      "seed": 42
+    },
+    "combined_minus_text": {
+      "point_difference": 0.004404789795614039,
+      "ci95_low": -0.01593754018466598,
+      "ci95_high": 0.02633520031164245,
+      "share_resamples_a_better": 0.681,
+      "n_boot": 1000,
+      "seed": 42
+    }
+  },
+  "text_coverage": {
+    "plays_with_official_player_id": 125861,
+    "player_games_with_plays_all_players": 20914,
+    "plays_not_in_cleaned_player_games": 8178,
+    "plays_matched_to_player_games": 117683,
+    "player_games_with_text": 18464,
+    "cleaned_player_games": 20886,
+    "player_games_without_text": 2422,
+    "carries_equal_run_plays_rate": 0.9954993775734942,
+    "targets_equal_pass_plays_rate": 0.9845829742411184,
+    "splits": {
+      "train": {
+        "rows": 5497,
+        "empty_documents": 124,
+        "empty_documents_pct": 2.2557758777515007,
+        "non_empty_pct": 97.7442241222485,
+        "mean_plays_per_window": 21.035837729670728,
+        "median_words_per_window": 172.0,
+        "windows_with_text_in_1_game": 158,
+        "windows_with_text_in_2_games": 362,
+        "windows_with_text_in_3_games": 4853
+      },
+      "validation": {
+        "rows": 2796,
+        "empty_documents": 94,
+        "empty_documents_pct": 3.3619456366237483,
+        "non_empty_pct": 96.63805436337626,
+        "mean_plays_per_window": 20.509298998569385,
+        "median_words_per_window": 170.0,
+        "windows_with_text_in_1_game": 82,
+        "windows_with_text_in_2_games": 188,
+        "windows_with_text_in_3_games": 2432
+      },
+      "test": {
+        "rows": 2889,
+        "empty_documents": 118,
+        "empty_documents_pct": 4.084458290065767,
+        "non_empty_pct": 95.91554170993423,
+        "mean_plays_per_window": 20.06022845275182,
+        "median_words_per_window": 166.0,
+        "windows_with_text_in_1_game": 124,
+        "windows_with_text_in_2_games": 215,
+        "windows_with_text_in_3_games": 2432
+      }
+    }
+  },
+  "name_masking_audit": {
+    "descriptions_audited": 125861,
+    "leftover_jersey_token": {
+      "count": 0,
+      "pct": 0.0
+    },
+    "leftover_initial_surname": {
+      "count": 0,
+      "pct": 0.0
+    },
+    "leftover_hash_number_name": {
+      "count": 0,
+      "pct": 0.0
+    },
+    "involved_player_surname_survives": {
+      "count": 4,
+      "pct": 0.0031781091839410145
+    },
+    "any_league_surname_token": {
+      "count": 47,
+      "pct": 0.03734278291130692
+    },
+    "top_leftover_surname_tokens": [
+      [
+        "Ball",
+        17
+      ],
+      [
+        "Rush",
+        6
+      ],
+      [
+        "Thompson",
+        3
+      ],
+      [
+        "Bridgewater",
+        2
+      ],
+      [
+        "Siemian",
+        2
+      ],
+      [
+        "Basham",
+        1
+      ],
+      [
+        "Jackson",
+        1
+      ],
+      [
+        "Purdy",
+        1
+      ],
+      [
+        "White",
+        1
+      ],
+      [
+        "Brissett",
+        1
+      ]
+    ],
+    "example_descriptions_with_residuals": [
+      "(3:14) 29-R.White right tackle to TB 46 for 4 yards (28-M.Hooker). Injury Update: Dak Prescott has a right hand injury; his return is questionable. Tarell Basham has a thigh injury; his return is questionable.",
+      "(:38) (Shotgun) 8-L.Jackson right guard for 79 yards, TOUCHDOWN. Jackson sets record for 100-yd, rushing games by QB.",
+      "(Kick formation) TWO-POINT CONVERSION ATTEMPT. 5-B.Anger rushes. ATTEMPT FAILS. Penalty on DAL-5-B.Anger, Illegal Kick/Kicking Loose Ball, declined.",
+      "(11:38) New QB - 5 T Bridgewater 31-R.Mostert right end to MIA 37 for -1 yards (99-D.Hunter, 58-J.Hicks).",
+      "(4:05) New QB - 19 Thompson, Skylar 26-S.Ahmed right tackle to MIA 43 for 7 yards (58-I.Thomas)."
+    ]
+  },
+  "no_future_text_check": {
+    "checks_run": 12,
+    "rows_compared": 17542,
+    "cutoff_weeks": [
+      5,
+      9,
+      13
+    ]
+  },
+  "test_set_used_for_selection_or_scoring": false,
+  "saved_models": {
+    "dummy": "/Users/BraxtonEdwards/Documents/College/CS5615/FantasyFootballRolePrediction/models/baseline_dummy.joblib",
+    "stats": "/Users/BraxtonEdwards/Documents/College/CS5615/FantasyFootballRolePrediction/models/baseline_stats.joblib",
+    "text": "/Users/BraxtonEdwards/Documents/College/CS5615/FantasyFootballRolePrediction/models/baseline_text.joblib",
+    "combined": "/Users/BraxtonEdwards/Documents/College/CS5615/FantasyFootballRolePrediction/models/baseline_combined.joblib"
+  }
+}

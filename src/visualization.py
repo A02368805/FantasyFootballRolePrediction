@@ -8,6 +8,7 @@ import matplotlib
 
 matplotlib.use("Agg")  # headless backend: we only save files
 import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
 import polars as pl  # noqa: E402
 import seaborn as sns  # noqa: E402
 
@@ -235,4 +236,95 @@ def plot_avg_opportunities_by_position(
     ax.set_title(f"Average offensive opportunities by position, {seasons[0]}-{seasons[-1]}")
     ax.legend()
     ax.margins(y=0.15)
+    return _save(fig, output_path)
+
+
+# ---------------------------------------------------------------------------
+# Baseline model graphs (real validation results only; 2025 test is not used)
+# ---------------------------------------------------------------------------
+
+BASELINE_MACRO_F1_PATH = GRAPHS_DIR / "baseline_validation_macro_f1.png"
+BASELINE_ACCURACY_PATH = GRAPHS_DIR / "baseline_validation_accuracy.png"
+BASELINE_CONFUSION_PATH = GRAPHS_DIR / "baseline_validation_confusion_matrices.png"
+BASELINE_PREDICTED_DIST_PATH = GRAPHS_DIR / "baseline_validation_predicted_label_distribution.png"
+
+_MODEL_COLORS = ["#9e9e9e", "#1f77b4", "#ff7f0e", "#2ca02c"]
+
+
+def plot_model_metric_bars(
+    results: dict[str, dict], metric: str, ylabel: str, title: str, output_path: Path
+) -> Path:
+    """Bar chart of one overall metric (``macro_f1`` or ``accuracy``) across models."""
+    names = list(results)
+    values = [results[n][metric] for n in names]
+    sns.set_theme(style="whitegrid")
+    fig, ax = plt.subplots(figsize=(10, 6))
+    bars = ax.bar(range(len(names)), values, color=_MODEL_COLORS[: len(names)])
+    for bar, v in zip(bars, values):
+        ax.text(bar.get_x() + bar.get_width() / 2, v, f"{v:.3f}", ha="center", va="bottom", fontsize=10)
+    ax.set_xticks(range(len(names)))
+    ax.set_xticklabels([n.replace(" (", "\n(") for n in names], fontsize=9)
+    ax.set_xlabel("Model")
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+    ax.set_ylim(0, min(1.0, max(values) * 1.2 + 0.02))
+    return _save(fig, output_path)
+
+
+def plot_confusion_matrices(
+    results: dict[str, dict], output_path: Path = BASELINE_CONFUSION_PATH, split_name: str = "Validation (2024)"
+) -> Path:
+    """One confusion-matrix panel per model: counts annotated, colour = row-normalized recall."""
+    names = list(results)
+    cols = 2
+    rows = (len(names) + cols - 1) // cols
+    sns.set_theme(style="white")
+    fig, axes = plt.subplots(rows, cols, figsize=(6.2 * cols, 5.2 * rows))
+    axes = list(axes.flat) if hasattr(axes, "flat") else [axes]
+    for ax, name in zip(axes, names):
+        m = results[name]
+        cm = np.array(m["confusion_matrix"], dtype=float)
+        norm = cm / np.maximum(cm.sum(axis=1, keepdims=True), 1)
+        labels = m["labels"]
+        sns.heatmap(norm, annot=False, cmap="Blues", vmin=0, vmax=1, cbar=False, ax=ax,
+                    xticklabels=labels, yticklabels=labels)
+        for i in range(cm.shape[0]):
+            for j in range(cm.shape[1]):
+                ax.text(j + 0.5, i + 0.5, f"{int(cm[i, j])}\n({norm[i, j]:.0%})", ha="center", va="center",
+                        color="white" if norm[i, j] > 0.5 else "black", fontsize=10)
+        ax.set_yticklabels(labels, rotation=0, va="center")
+        ax.set_title(f"{name}\nmacro F1 {m['macro_f1']:.3f}", fontsize=11)
+        ax.set_xlabel("Predicted label")
+        ax.set_ylabel("True label")
+    for ax in axes[len(names):]:
+        ax.axis("off")
+    fig.suptitle(f"Confusion matrices, {split_name} (counts; percent of true class)", fontsize=13)
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
+    return _save(fig, output_path)
+
+
+def plot_predicted_label_distribution(
+    results: dict[str, dict], output_path: Path = BASELINE_PREDICTED_DIST_PATH
+) -> Path:
+    """Counts of each class predicted by each model, next to the true label counts."""
+    names = list(results)
+    labels = results[names[0]]["labels"]
+    series = [("Actual (true labels)", [results[names[0]]["true_counts"][l] for l in labels], "#333333")]
+    for n, color in zip(names, _MODEL_COLORS):
+        series.append((n, [results[n]["predicted_counts"][l] for l in labels], color))
+    sns.set_theme(style="whitegrid")
+    fig, ax = plt.subplots(figsize=(11, 6))
+    width = 0.8 / len(series)
+    for i, (name, counts, color) in enumerate(series):
+        xs = [j + (i - (len(series) - 1) / 2) * width for j in range(len(labels))]
+        bars = ax.bar(xs, counts, width=width, label=name, color=color)
+        for bar, c in zip(bars, counts):
+            ax.text(bar.get_x() + bar.get_width() / 2, c, f"{c:,}", ha="center", va="bottom", fontsize=7)
+    ax.set_xticks(range(len(labels)))
+    ax.set_xticklabels(labels)
+    ax.set_xlabel("Class (true label for 'Actual', predicted label for models)")
+    ax.set_ylabel("Number of validation player-weeks")
+    ax.set_title("Label distribution by predicted class, Validation (2024)")
+    ax.legend(fontsize=8)
+    ax.margins(y=0.12)
     return _save(fig, output_path)

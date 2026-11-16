@@ -226,3 +226,79 @@ def load_schedules_cached(
     df = pl.concat(frames, how="diagonal_relaxed")
     validate_columns(df, SCHEDULE_REQUIRED_COLUMNS, "Schedules")
     return df
+
+
+# ---------------------------------------------------------------------------
+# Play-by-play text (slim, per-season Parquet cache)
+# ---------------------------------------------------------------------------
+
+# Only the columns needed to build player-game text documents. The full pbp table
+# has ~370 columns and ~100 MB per season; we never store it.
+PBP_COLUMNS = [
+    "game_id",
+    "play_id",
+    "season",
+    "week",
+    "season_type",
+    "play_type",
+    "desc",
+    "rusher_player_id",
+    "receiver_player_id",
+]
+
+
+def pbp_cache_path(season: int, raw_dir: Path = RAW_DATA_DIR) -> Path:
+    """Path of the cached slim play-by-play text table for one season."""
+    return raw_dir / f"pbp_text_{season}.parquet"
+
+
+def load_pbp_text_cached(
+    seasons: Sequence[int] = HISTORICAL_SEASONS,
+    raw_dir: Path = RAW_DATA_DIR,
+    refresh: bool = False,
+) -> pl.DataFrame:
+    """Regular-season play-by-play (slim columns) for several seasons.
+
+    Each season is downloaded separately with ``nflreadpy.load_pbp([season])``,
+    reduced to ``PBP_COLUMNS`` and REG games only, and cached as
+    ``data/raw/pbp_text_<season>.parquet``.
+    """
+    try:
+        import nflreadpy as nfl
+    except ImportError as exc:
+        raise DataLoadError("nflreadpy is not installed. Run: pip install -r requirements.txt") from exc
+
+    frames = []
+    for season in seasons:
+        path = pbp_cache_path(season, raw_dir)
+        if path.exists() and not refresh:
+            print(f"[cache] play-by-play text {season}: {path.name}")
+            frames.append(_read_cached(path))
+            continue
+        print(f"[download] play-by-play {season} (large; only text columns are kept)")
+        try:
+            pbp = nfl.load_pbp([season])
+        except Exception as exc:
+            if path.exists():
+                print(f"[warning] pbp download failed ({exc}); using cached {path}")
+                frames.append(_read_cached(path))
+                continue
+            raise DataLoadError(
+                f"Could not download play-by-play for {season}: {type(exc).__name__}: {exc}. "
+                "Check your internet connection and try again."
+            ) from exc
+        if not isinstance(pbp, pl.DataFrame):
+            pbp = pl.from_pandas(pbp)
+        validate_columns(pbp, PBP_COLUMNS, f"Play-by-play {season}")
+        slim = pbp.select(PBP_COLUMNS).filter(pl.col("season_type") == "REG")
+        del pbp
+        if slim.height == 0:
+            raise DataLoadError(f"Play-by-play for {season} returned no regular-season rows.")
+        try:
+            raw_dir.mkdir(parents=True, exist_ok=True)
+            slim.write_parquet(path)
+        except OSError as exc:
+            print(f"[warning] Could not save pbp text to {path}: {exc}")
+        frames.append(slim)
+
+    return pl.concat(frames, how="diagonal_relaxed")
